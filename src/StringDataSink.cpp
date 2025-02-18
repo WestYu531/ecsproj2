@@ -1,15 +1,29 @@
 #include "StringDataSink.h"
 
+CStringDataSink::CStringDataSink() noexcept : DString(){
+    
+}
+
 const std::string &CStringDataSink::String() const{
     return DString;
 }
 
 bool CStringDataSink::Put(const char &ch) noexcept{
-    DString += std::string(1,ch);
-    return true;
+    try {
+        DString += ch;
+        return true;
+    }
+    catch(...) {
+        return false;
+    }
 }
 
 bool CStringDataSink::Write(const std::vector<char> &buf) noexcept{
-    DString += std::string(buf.data(),buf.size());
-    return true;
+    try {
+        DString.append(buf.begin(), buf.end());
+        return true;
+    }
+    catch(...) {
+        return false;
+    }
 }
