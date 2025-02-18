@@ -49,9 +49,6 @@ struct CXMLWriter::SImplementation {
     bool WriteEntity(const SXMLEntity &entity) {
         switch(entity.DType) {
             case SXMLEntity::EType::StartElement:
-                if(!WriteIndent()) {
-                    return false;
-                }
                 if(!WriteString("<")) {
                     return false;
                 }
@@ -75,7 +72,7 @@ struct CXMLWriter::SImplementation {
                         return false;
                     }
                 }
-                if(!WriteString(">\n")) {
+                if(!WriteString(">")) {
                     return false;
                 }
                 DElementStack.push(entity.DNameData);
@@ -83,36 +80,24 @@ struct CXMLWriter::SImplementation {
                 
             case SXMLEntity::EType::EndElement:
                 DElementStack.pop();
-                if(!WriteIndent()) {
-                    return false;
-                }
                 if(!WriteString("</")) {
                     return false;
                 }
                 if(!WriteString(entity.DNameData)) {
                     return false;
                 }
-                if(!WriteString(">\n")) {
+                if(!WriteString(">")) {
                     return false;
                 }
                 break;
                 
             case SXMLEntity::EType::CharData:
-                if(!WriteIndent()) {
-                    return false;
-                }
                 if(!WriteEscaped(entity.DNameData)) {
-                    return false;
-                }
-                if(!WriteString("\n")) {
                     return false;
                 }
                 break;
                 
             case SXMLEntity::EType::CompleteElement:
-                if(!WriteIndent()) {
-                    return false;
-                }
                 if(!WriteString("<")) {
                     return false;
                 }
@@ -136,7 +121,7 @@ struct CXMLWriter::SImplementation {
                         return false;
                     }
                 }
-                if(!WriteString("/>\n")) {
+                if(!WriteString("/>")) {
                     return false;
                 }
                 break;

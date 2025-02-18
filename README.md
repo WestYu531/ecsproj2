@@ -70,9 +70,9 @@ This project implements DSV (Delimiter-Separated Values) and XML parsers in C++.
 - docs/: Documentation
 - Makefile: Build system
 
-## Documentation
-Detailed documentation for each component can be found in the docs/ directory:
-- DSVReader.md
-- DSVWriter.md
-- XMLReader.md
-- XMLWriter.md
+However, I have used **Generative AI** to:
+- Simplify the code implementation by improving readability.
+- Identify and correct syntax errors.
+- Optimize logic to ensure correct handling of edge cases.
+
+All AI-generated content has been reviewed and modified to meet project requirements.

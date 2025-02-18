@@ -132,18 +132,27 @@ std::string Join(const std::string &str, const std::vector< std::string > &vect)
     return result;
 }
 
-std::string ExpandTabs(const std::string &str, int tabsize) noexcept{
+std::string ExpandTabs(const std::string &str, int tabsize) noexcept {
     std::string result;
+    int column = 0;
 
     for (char ch : str) {
         if (ch == '\t') {
-            result.append(tabsize - result.length() % tabsize, ' '); // replace \t with tabsize's tab
+            if (tabsize <= 0) {
+                
+                continue;
+            } else {
+                int spaces_to_add = tabsize - (column % tabsize);
+                result.append(spaces_to_add, ' ');
+                column += spaces_to_add;
+            }
         } else {
-            result.push_back(ch);
+            result += ch;
+            column++;
         }
     }
-
     return result;
+
 }
 
 int EditDistance(const std::string &left, const std::string &right, bool ignorecase) noexcept{

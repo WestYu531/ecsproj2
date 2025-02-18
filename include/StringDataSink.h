@@ -8,6 +8,7 @@ class CStringDataSink : public CDataSink{
     private:
         std::string DString;
     public:
+        CStringDataSink() noexcept;
         const std::string &String() const;
 
         bool Put(const char &ch) noexcept override;

@@ -30,8 +30,11 @@ struct CXMLReader::SImplementation {
     
     static void CharDataHandler(void *userData, const XML_Char *s, int len) {
         auto Implementation = static_cast<SImplementation*>(userData);
-        std::string Content(s, len);
-        if(!Content.empty() && !std::all_of(Content.begin(), Content.end(), ::isspace)){
+        std::string Content;
+        for(int i = 0; i < len; i++) {
+            Content += s[i];
+        }
+        if(!Content.empty() && !std::all_of(Content.begin(), Content.end(), ::isspace)) {
             SXMLEntity Entity;
             Entity.DType = SXMLEntity::EType::CharData;
             Entity.DNameData = Content;
