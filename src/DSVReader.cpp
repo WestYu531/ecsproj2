@@ -37,34 +37,40 @@ struct CDSVReader::SImplementation {
             
             if(ch == '"'){
                 if(inQuotes){
-                    // 检查下一个字符
+                    // Check for escaped quote
                     char nextCh;
                     if(DDataSource->Peek(nextCh) && nextCh == '"'){
-                        // 这是一个转义的引号，添加单个引号到字段中
-                        DDataSource->Get(nextCh); // 消费第二个引号
-                        currentField += '"';
+                        DDataSource->Get(nextCh); // Consume the second quote
+                        currentField += '"'; // Only add one quote
                     }
                     else{
-                        // 这是引号的结束
                         inQuotes = false;
                     }
                 }
                 else if(currentField.empty()){
-                    // 字段开始的引号
                     inQuotes = true;
                 }
                 else{
-                    // 字段中间的引号，作为普通字符处理
                     currentField += ch;
                 }
             }
-            else if(ch == DDelimiter && !inQuotes){
-                row.push_back(currentField);
-                currentField.clear();
+            else if(ch == '\n'){
+                if(inQuotes){
+                    currentField += ch;
+                }
+                else{
+                    row.push_back(currentField);
+                    return true;
+                }
             }
-            else if(ch == '\n' && !inQuotes){
-                row.push_back(currentField);
-                return true;
+            else if(ch == DDelimiter){
+                if(inQuotes){
+                    currentField += ch;
+                }
+                else{
+                    row.push_back(currentField);
+                    currentField.clear();
+                }
             }
             else{
                 currentField += ch;

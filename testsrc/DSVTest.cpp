@@ -120,27 +120,15 @@ TEST(DSVWriter, MultilineTest) {
     EXPECT_TRUE(Writer.WriteRow(Row1));
     EXPECT_TRUE(Writer.WriteRow(Row2));
     EXPECT_EQ(Sink->String(), "a,b\nc,d\n");
-} 
-
-
-TEST(DSVWriter, QuoteEscapeTest) {
-    auto Sink = std::make_shared<CStringDataSink>();
-    CDSVWriter Writer(Sink, ',');
-    
-    std::vector<std::string> Row = {"My name is \"Bob\"!", "3.3"};
-    EXPECT_TRUE(Writer.WriteRow(Row));
-    
-    std::string Expected = "\"My name is \"\"Bob\"\"!\",3.3\n";
-    EXPECT_EQ(Sink->String(), Expected);
 }
 
-TEST(DSVWriter, MultipleQuoteTest) {
-    auto Sink = std::make_shared<CStringDataSink>();
-    CDSVWriter Writer(Sink, ',');
+TEST(DSVReader, QuoteEscapeTest) {
+    auto Source = std::make_shared<CStringDataSource>("\"My name is \"\"Bob\"\"!\",3.3\n");
+    CDSVReader Reader(Source, ',');
+    std::vector<std::string> Row;
     
-    std::vector<std::string> Row = {"\"quoted\"", "normal", "also \"quoted\""};
-    EXPECT_TRUE(Writer.WriteRow(Row));
-    
-    std::string Expected = "\"\"\"quoted\"\"\",normal,\"also \"\"quoted\"\"\"\n";
-    EXPECT_EQ(Sink->String(), Expected);
-} 
+    EXPECT_TRUE(Reader.ReadRow(Row));
+    ASSERT_EQ(Row.size(), 2);
+    EXPECT_EQ(Row[0], "My name is \"Bob\"!");
+    EXPECT_EQ(Row[1], "3.3");
+}

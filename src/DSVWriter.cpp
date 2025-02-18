@@ -19,20 +19,18 @@ struct CDSVWriter::SImplementation {
                str.find('\n') != std::string::npos;
     }
     
-    bool WriteQuoted(const std::string &str) {
-        if(!DDataSink->Put('"')) {
+    bool WriteQuoted(const std::string &str){
+        if(!DDataSink->Put('"')){
             return false;
         }
         
-        for(char ch : str) {
-            if(ch == '"') {
-                // 写入一个额外的引号来转义
-                if(!DDataSink->Put('"')) {
+        for(char ch : str){
+            if(ch == '"'){
+                if(!DDataSink->Put('"')){ // Escape quote with another quote
                     return false;
                 }
             }
-            // 写入原始字符
-            if(!DDataSink->Put(ch)) {
+            if(!DDataSink->Put(ch)){
                 return false;
             }
         }

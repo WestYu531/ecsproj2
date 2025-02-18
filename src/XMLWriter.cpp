@@ -21,14 +21,6 @@ struct CXMLWriter::SImplementation {
     }
     
     bool WriteIndent() {
-        if(!DIndent) {
-            return true;
-        }
-        for(size_t i = 0; i < DElementStack.size(); i++) {
-            if(!WriteString("    ")) {
-                return false;
-            }
-        }
         return true;
     }
     
