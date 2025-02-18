@@ -8,9 +8,19 @@ struct CXMLReader::SImplementation {
     XML_Parser DParser;
     std::queue<SXMLEntity> DEntityQueue;
     bool DError;
+    std::string DCurrentCharData;
     
     static void StartElementHandler(void *userData, const XML_Char *name, const XML_Char **attrs) {
         auto Implementation = static_cast<SImplementation*>(userData);
+        if(!Implementation->DCurrentCharData.empty() && 
+           !std::all_of(Implementation->DCurrentCharData.begin(), Implementation->DCurrentCharData.end(), ::isspace)) {
+            SXMLEntity Entity;
+            Entity.DType = SXMLEntity::EType::CharData;
+            Entity.DNameData = Implementation->DCurrentCharData;
+            Implementation->DEntityQueue.push(Entity);
+            Implementation->DCurrentCharData.clear();
+        }
+        
         SXMLEntity Entity;
         Entity.DType = SXMLEntity::EType::StartElement;
         Entity.DNameData = name;
@@ -22,6 +32,15 @@ struct CXMLReader::SImplementation {
     
     static void EndElementHandler(void *userData, const XML_Char *name) {
         auto Implementation = static_cast<SImplementation*>(userData);
+        if(!Implementation->DCurrentCharData.empty() && 
+           !std::all_of(Implementation->DCurrentCharData.begin(), Implementation->DCurrentCharData.end(), ::isspace)) {
+            SXMLEntity Entity;
+            Entity.DType = SXMLEntity::EType::CharData;
+            Entity.DNameData = Implementation->DCurrentCharData;
+            Implementation->DEntityQueue.push(Entity);
+            Implementation->DCurrentCharData.clear();
+        }
+        
         SXMLEntity Entity;
         Entity.DType = SXMLEntity::EType::EndElement;
         Entity.DNameData = name;
@@ -30,16 +49,7 @@ struct CXMLReader::SImplementation {
     
     static void CharDataHandler(void *userData, const XML_Char *s, int len) {
         auto Implementation = static_cast<SImplementation*>(userData);
-        std::string Content;
-        for(int i = 0; i < len; i++) {
-            Content += s[i];
-        }
-        if(!Content.empty() && !std::all_of(Content.begin(), Content.end(), ::isspace)) {
-            SXMLEntity Entity;
-            Entity.DType = SXMLEntity::EType::CharData;
-            Entity.DNameData = Content;
-            Implementation->DEntityQueue.push(Entity);
-        }
+        Implementation->DCurrentCharData.append(s, len);
     }
     
     SImplementation(std::shared_ptr<CDataSource> src) 
